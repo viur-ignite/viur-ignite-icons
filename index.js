@@ -9,7 +9,7 @@ var fs = require('fs');
 
 
 iconDir = "./appengine/icons"
-lessDir = "./sources/less"
+lessDir = dirname(__dirname)+"/viur-ignite-css/less"
 
 module.exports = {
 	build: function() {
@@ -17,8 +17,10 @@ module.exports = {
 	},
 
 	init: function() {
-		// console.log("IsThere: %s", IsThere(lessDir+"/icon.less"));
-		// console.log("IsThere: %s", IsThere(iconDir));
+		if(!IsThere(lessDir)) {
+			return console.log("Make sure that you have the module 'viur-ignite-css' installed");
+		}
+
 		if(IsThere(lessDir+"/icon.less") || IsThere(iconDir)) { 
 			setTimeout(function() {
 
@@ -26,7 +28,7 @@ module.exports = {
 
 				var property = {
 					name: 'yesno',
-					message: 'Are you sure to overwrite icon.less in sources/less and icons in appengine/icons?',
+					message: 'Are you sure to overwrite icon.less in node_modules/viur-ignite-css/less/ and icons in appengine/icons?',
 					validator: /y[es]*|n[o]?/,
 					warning: 'Must respond yes or no',
 					default: 'no'
