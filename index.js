@@ -8,7 +8,7 @@ var copy = require('recursive-copy');
 var fs = require('fs');
 
 
-iconDir = "./appengine/static/icons"
+iconDir = "./sources/icons"
 lessDir = "./sources/less"
 
 module.exports = {
