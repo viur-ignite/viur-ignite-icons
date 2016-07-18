@@ -1,0 +1,33 @@
+{
+  "name": "viur-ignite-icons",
+  "version": "1.0.7",
+  "description": "An extension of viur-ignite",
+  "main": "index.js",
+  "scripts": {
+    "test": "\"echo Hello world\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viur-ignite/viur-ignite-icons.git"
+  },
+  "keywords": [
+    "viur",
+    "ignite",
+    "icons"
+  ],
+  "author": "VIUR",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/viur-ignite/viur-ignite-icons/issues"
+  },
+  "homepage": "https://github.com/viur-ignite/viur-ignite-icons#readme",
+  "devDependencies": {},
+  "dependencies": {
+    "gulp": "latest",
+    "gulp-rename": "latest",
+    "node-fs": "latest",
+    "is-there": "latest",
+    "prompt": "latest",
+    "recursive-copy": "latest"
+  }
+}
