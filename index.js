@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var rename = require('gulp-rename');
+var gcallback = require('gulp-callback')
 
 var path = require('path');
 var IsThere = require("is-there");
@@ -13,8 +14,9 @@ lessDir = "./sources/less"
 
 module.exports = {
 	build: function() {
-		copyPrototype();
-		return writeClasses("")
+		copyPrototype(function() {
+			writeClasses("");
+		});
 	},
 
 	init: function() {
@@ -60,9 +62,14 @@ function dirname(path) {
 		.replace(/\/[^\/]*\/?$/, '');
 }
 
-function copyPrototype() {
-	return gulp.src(__dirname+'/prototype/icon.less')
-		.pipe(gulp.dest(lessDir));
+function copyPrototype(callback) {
+	var result = gulp.src(__dirname+'/prototype/icon.less')
+		.pipe(gulp.dest(lessDir))
+		.pipe(gcallback(function(callback){
+			console.log(123)
+			callback();
+		}));
+	return result;
 }	
 function copyIcons() {
 	return copy(__dirname+'/icons/', iconDir, {overwrite: true}, function(error, results) {
@@ -88,11 +95,11 @@ function writeClasses(folder) {
 			var	tmpLess  =	tmpClass+":before {" +"\n";
 				tmpLess +=		"\tbackground-image:url('../icons"+folder+"/"+name+"');" +"\n";
 				tmpLess +=	"}"+"\n";
-
 			fs.appendFile(lessDir+"/icon.less", tmpLess, function (err) {
 				if(err) {
 					return console.log(err);
 				}
+				console.log('done')
 			});
 		}
 	}

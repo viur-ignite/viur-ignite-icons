@@ -1,6 +1,6 @@
 {
   "name": "viur-ignite-icons",
-  "version": "1.0.11",
+  "version": "1.0.13",
   "description": "An extension of viur-ignite",
   "main": "index.js",
   "scripts": {
@@ -25,6 +25,7 @@
   "dependencies": {
     "gulp": "latest",
     "gulp-rename": "latest",
+    "gulp-callback": "latest",
     "node-fs": "latest",
     "is-there": "latest",
     "prompt": "latest",
