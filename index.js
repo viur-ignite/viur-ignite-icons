@@ -9,10 +9,11 @@ var fs = require('fs');
 
 
 iconDir = "./appengine/static/icons"
-lessDir = dirname(__dirname)+"/viur-ignite-css/less"
+lessDir = "./sources/less"
 
 module.exports = {
 	build: function() {
+		copyPrototype();
 		return writeClasses("")
 	},
 
