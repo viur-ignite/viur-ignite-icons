@@ -8,7 +8,7 @@ var copy = require('recursive-copy');
 var fs = require('fs');
 
 
-iconDir = "./appengine/icons"
+iconDir = "./appengine/static/icons"
 lessDir = dirname(__dirname)+"/viur-ignite-css/less"
 
 module.exports = {
