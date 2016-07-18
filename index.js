@@ -63,13 +63,12 @@ function dirname(path) {
 }
 
 function copyPrototype(callback) {
-	var result = gulp.src(__dirname+'/prototype/icon.less')
+	return result = gulp.src(__dirname+'/prototype/icon.less')
 		.pipe(gulp.dest(lessDir))
-		.pipe(gcallback(function(callback){
-			console.log(123)
-			callback();
+		.pipe(gcallback(function() {
+			if(typeof callback === "function")
+				callback();
 		}));
-	return result;
 }	
 function copyIcons() {
 	return copy(__dirname+'/icons/', iconDir, {overwrite: true}, function(error, results) {
@@ -99,7 +98,6 @@ function writeClasses(folder) {
 				if(err) {
 					return console.log(err);
 				}
-				console.log('done')
 			});
 		}
 	}
