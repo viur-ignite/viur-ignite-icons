@@ -2,7 +2,7 @@
 
 const PLUGIN_NAME = 'viur-ignite-icons';
 
-var	gulp = require('gulp');
+var	gulp = require('gulp'),
 	gutil = require('gulp-util'),
 	rename = require('gulp-rename'),
 	gcallback = require('gulp-callback');
@@ -11,8 +11,6 @@ var	path = require('path'),
 	isThere = require("is-there"),
 	copy = require('recursive-copy'),
 	fs = require('fs');
-
-var options; // use options global
 
 
 module.exports = {
@@ -24,14 +22,14 @@ module.exports = {
 			lessDir: './sources/less/'
 		};
 
-		if (typeof(options)==='undefined') options = {};
+		if (typeof(options)==='undefined') var options = {};
 		for (var key in defaultOptions) {
 			if (typeof(options[key])==='undefined') options[key] = defaultOptions[key];
 		}
 
 
-		copyPrototype(function() {
-			writeClasses("");
+		copyPrototype(options, function() {
+			writeClasses(options, "");
 		});
 	},
 
@@ -40,11 +38,11 @@ module.exports = {
 		// Set Default Options
 		var defaultOptions = {
 			iconDir: './sources/icons/',
-			lessDir: './sources/less/'
+			lessDir: './sources/less/',
 			overwrite: false
 		};
 
-		if (typeof(options)==='undefined') options = {};
+		if (typeof(options)==='undefined') var options = {};
 		for (var key in defaultOptions) {
 			if (typeof(options[key])==='undefined') options[key] = defaultOptions[key]
 		}
@@ -53,23 +51,23 @@ module.exports = {
 		if((isThere(options.lessDir+'/icon.less') || isThere(options.iconDir)) && (options.overwrite === false || options.overwrite === "false")) {
 			throw new gutil.PluginError(PLUGIN_NAME, "'" + options.dest + "' already exists\n\tcall function with option overwrite: true");
 		} else {
-			copyPrototype();
-			copyIcons();
+			copyPrototype(options);
+			copyIcons(options);
 
 			return true
 		}
 	}
 };
 
-function copyPrototype(callback) {
-	return result = gulp.src(__dirname+'/prototype/icon.less')
+function copyPrototype(options, callback) {
+	return gulp.src(__dirname+'/prototype/icon.less')
 		.pipe(gulp.dest(options.lessDir))
 		.pipe(gcallback(function() {
 			if(typeof callback === "function")
 				callback();
 		}));
 }	
-function copyIcons() {
+function copyIcons(options) {
 	return copy(__dirname+'/icons/', options.iconDir, {overwrite: true}, function(error, results) {
 		if (error) return console.error('Copy failed: ' + error);
 
@@ -77,7 +75,7 @@ function copyIcons() {
 	});
 }
 
-function writeClasses(folder) {
+function writeClasses(options, folder) {
 	// get list of files in icon dir
 	var files = fs.readdirSync(options.iconDir+folder);
 	
@@ -86,7 +84,7 @@ function writeClasses(folder) {
 		var name = files[item];
 
 		if (fs.statSync(options.iconDir+"/"+folder+"/"+name).isDirectory()) { // if dir
-			writeClasses(folder+"/"+name);
+			writeClasses(options, folder+"/"+name);
 		} else { // if file
 			console.log("Processing %s", folder+"/"+name);
 

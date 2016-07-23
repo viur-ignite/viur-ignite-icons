@@ -1,6 +1,6 @@
 {
   "name": "viur-ignite-icons",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Icon libary | Extension of viur-ignite-css",
   "main": "index.js",
   "scripts": {
