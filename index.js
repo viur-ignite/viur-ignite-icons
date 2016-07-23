@@ -1,103 +1,101 @@
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var gcallback = require('gulp-callback')
+"use strict";
 
-var path = require('path');
-var IsThere = require("is-there");
-var prompt = require('prompt');
-var copy = require('recursive-copy');
-var fs = require('fs');
+const PLUGIN_NAME = 'viur-ignite-icons';
 
+var	gulp = require('gulp');
+	gutil = require('gulp-util'),
+	rename = require('gulp-rename'),
+	gcallback = require('gulp-callback');
 
-iconDir = "./sources/icons"
-lessDir = "./sources/less"
+var	path = require('path'),
+	isThere = require("is-there"),
+	copy = require('recursive-copy'),
+	fs = require('fs');
+
+var options; // use options global
+
 
 module.exports = {
-	build: function() {
+	build: function(options) {
+
+		// Set Default Options
+		var defaultOptions = {
+			iconDir: './sources/icons/',
+			lessDir: './sources/less/'
+		};
+
+		if (typeof(options)==='undefined') options = {};
+		for (var key in defaultOptions) {
+			if (typeof(options[key])==='undefined') options[key] = defaultOptions[key];
+		}
+
+
 		copyPrototype(function() {
 			writeClasses("");
 		});
 	},
 
-	init: function() {
-		if(!IsThere(lessDir)) {
-			return console.log("Make sure that you have the module 'viur-ignite-css' installed");
+	init: function(options) {
+
+		// Set Default Options
+		var defaultOptions = {
+			iconDir: './sources/icons/',
+			lessDir: './sources/less/'
+			overwrite: false
+		};
+
+		if (typeof(options)==='undefined') options = {};
+		for (var key in defaultOptions) {
+			if (typeof(options[key])==='undefined') options[key] = defaultOptions[key]
 		}
 
-		if(IsThere(lessDir+"/icon.less") || IsThere(iconDir)) { 
-			setTimeout(function() {
 
-				prompt.start();
-
-				var property = {
-					name: 'yesno',
-					message: 'Are you sure to overwrite icon.less in node_modules/viur-ignite-css/less/ and icons in appengine/icons?',
-					validator: /y[es]*|n[o]?/,
-					warning: 'Must respond yes or no',
-					default: 'no'
-				};
-
-				prompt.get(property, function (err, result) {
-					console.log('Your Input: ' + result.yesno);
-
-					if(result.yesno == "yes" || result.yesno == "y") {
-						prompt.stop();
-						copyPrototype();
-						copyIcons();
-					} else {
-						prompt.stop();
-					}
-				});
-
-			}, 5);
+		if((isThere(options.lessDir+'/icon.less') || isThere(options.iconDir)) && (options.overwrite === false || options.overwrite === "false")) {
+			throw new gutil.PluginError(PLUGIN_NAME, "'" + options.dest + "' already exists\n\tcall function with option overwrite: true");
 		} else {
 			copyPrototype();
 			copyIcons();
+
+			return true
 		}
 	}
 };
 
-function dirname(path) {
-	return path.replace(/\\/g, '/')
-		.replace(/\/[^\/]*\/?$/, '');
-}
-
 function copyPrototype(callback) {
 	return result = gulp.src(__dirname+'/prototype/icon.less')
-		.pipe(gulp.dest(lessDir))
+		.pipe(gulp.dest(options.lessDir))
 		.pipe(gcallback(function() {
 			if(typeof callback === "function")
 				callback();
 		}));
 }	
 function copyIcons() {
-	return copy(__dirname+'/icons/', iconDir, {overwrite: true}, function(error, results) {
-		if (error) {
-			console.error('Copy failed: ' + error);
-		} else {
-			console.info('Copied ' + results.length + ' files');
-		}
+	return copy(__dirname+'/icons/', options.iconDir, {overwrite: true}, function(error, results) {
+		if (error) return console.error('Copy failed: ' + error);
+
+		console.info('Copied ' + results.length + ' icons');
 	});
 }
 
 function writeClasses(folder) {
-	var files = fs.readdirSync(iconDir+folder);
-	for (var item in files) { // for each item in folder
+	// get list of files in icon dir
+	var files = fs.readdirSync(options.iconDir+folder);
+	
+	// for each item in folder
+	for (var item in files) {
 		var name = files[item];
 
-		if (fs.statSync(iconDir+"/"+folder+"/"+name).isDirectory()) { // if dir
+		if (fs.statSync(options.iconDir+"/"+folder+"/"+name).isDirectory()) { // if dir
 			writeClasses(folder+"/"+name);
 		} else { // if file
 			console.log("Processing %s", folder+"/"+name);
 
-			var	tmpClass = ".i-"+name.replace('.svg','').replace(' ', '-');
+			var	tmpClass = ".i-"+name.replace('.svg','').replace('.jpg','').replace('.png','').replace('.gif','').replace(' ', '-');
 			var	tmpLess  =	tmpClass+":before {" +"\n";
 				tmpLess +=		"\tbackground-image:url('../icons"+folder+"/"+name+"');" +"\n";
 				tmpLess +=	"}"+"\n";
-			fs.appendFile(lessDir+"/icon.less", tmpLess, function (err) {
-				if(err) {
-					return console.log(err);
-				}
+			fs.appendFile(options.lessDir+"/icon.less", tmpLess, function (err) {
+				if(err) return console.error(err);
 			});
 		}
 	}
